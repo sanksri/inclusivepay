@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>InclusivePay Dashboard</title>
+
+  <link rel="stylesheet" href="dashboard.css">
+
+  <!-- AG Grid Community v31 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@31.3.4/styles/ag-grid.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@31.3.4/styles/ag-theme-alpine.css">
+  <script src="https://cdn.jsdelivr.net/npm/ag-grid-community@31.3.4/dist/ag-grid-community.min.js"></script>
+</head>
+<body data-theme="midnight" data-size="normal">
+  <a class="skip-link" href="#main">Skip to the dashboard</a>
+  <div id="srStatus" class="sr-only" role="status" aria-live="polite"></div>
+
+  <header class="dash-header">
+    <div>
+      <h1>InclusivePay Dashboard</h1>
+      <p class="sub">Payments you sent and money you asked for. Updates live as PayPal reports changes.</p>
+    </div>
+    <div class="controls" role="group" aria-label="Display settings">
+      <a class="btn" href="index.html">← Voice assistant</a>
+      <label>Theme
+        <select id="themeSel">
+          <option value="midnight">Midnight</option>
+          <option value="daylight">Daylight</option>
+          <option value="contrast">High contrast</option>
+        </select>
+      </label>
+      <label>Text size
+        <select id="sizeSel">
+          <option value="normal">Normal</option>
+          <option value="large">Large</option>
+          <option value="xlarge">Extra large</option>
+        </select>
+      </label>
+    </div>
+  </header>
+
+  <main id="main">
+    <p class="mode-line"><span id="liveBadge" class="live" role="status">Connecting…</span> <span id="modeLine"></span></p>
+
+    <section aria-labelledby="kpiTitle">
+      <h2 id="kpiTitle" class="sr-only">Summary</h2>
+      <dl class="kpis">
+        <div class="kpi"><dt>Balance</dt><dd id="kpiBalance" class="kpi-val">…</dd><dd id="kpiBalanceSub" class="kpi-sub"></dd></div>
+        <div class="kpi"><dt>Total sent</dt><dd id="kpiSent" class="kpi-val">…</dd><dd id="kpiSentSub" class="kpi-sub"></dd></div>
+        <div class="kpi"><dt>Waiting for PayPal</dt><dd id="kpiPending" class="kpi-val">…</dd><dd id="kpiPendingSub" class="kpi-sub"></dd></div>
+        <div class="kpi"><dt>Invoices outstanding</dt><dd id="kpiInvoices" class="kpi-val">…</dd><dd id="kpiInvoicesSub" class="kpi-sub"></dd></div>
+      </dl>
+    </section>
+
+    <div class="cols">
+      <section class="card" aria-labelledby="payTitle">
+        <h2 id="payTitle">Money out: payments</h2>
+        <div class="toolbar">
+          <label for="payFilter" class="sr-only">Search payments</label>
+          <input id="payFilter" type="search" placeholder="Search payments" autocomplete="off">
+          <button type="button" id="payRead" class="btn small">🔊 Read selected</button>
+          <button type="button" id="payCsv" class="btn small">⬇ CSV</button>
+        </div>
+        <div id="payGrid" class="ag-theme-alpine grid" role="region" aria-label="Payments table"></div>
+      </section>
+
+      <section class="card" aria-labelledby="invTitle">
+        <h2 id="invTitle">Money in: invoices</h2>
+        <div class="toolbar">
+          <label for="invFilter" class="sr-only">Search invoices</label>
+          <input id="invFilter" type="search" placeholder="Search invoices" autocomplete="off">
+          <button type="button" id="invRead" class="btn small">🔊 Read selected</button>
+          <button type="button" id="invCsv" class="btn small">⬇ CSV</button>
+        </div>
+        <div id="invGrid" class="ag-theme-alpine grid" role="region" aria-label="Invoices table"></div>
+      </section>
+    </div>
+    <p class="hint">Keyboard: arrow keys move between cells, press <kbd>R</kbd> on a row to hear it, open a column's filter from its header menu.</p>
+
+    <div class="cols">
+      <section class="card" aria-labelledby="barsTitle">
+        <h2 id="barsTitle">Spending by recipient</h2>
+        <ul id="bars" class="bars"></ul>
+      </section>
+
+      <section class="card" aria-labelledby="feedTitle">
+        <h2 id="feedTitle">Live activity</h2>
+        <ol id="feed" class="feed"></ol>
+        <div id="demoBox" class="demo" hidden>
+          <p><strong>Demo controls.</strong> Pretends PayPal sent a webhook, so you can watch a live update without a public URL. These entries are labelled “Simulated”.</p>
+          <button type="button" id="simPayout" class="btn small">Simulate: payment completed</button>
+          <button type="button" id="simInvoice" class="btn small">Simulate: invoice paid</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="dashboard.js"></script>
+</body>
+</html>

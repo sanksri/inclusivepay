@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>InclusivePay Financial Assistant</title>
+
+  <link rel="stylesheet" href="style.css">
+
+  <!-- AG Grid Community v31 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@31.3.4/styles/ag-grid.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@31.3.4/styles/ag-theme-alpine.css">
+  <script src="https://cdn.jsdelivr.net/npm/ag-grid-community@31.3.4/dist/ag-grid-community.min.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#voiceBtnModern">Skip to voice assistant</a>
+
+  <!-- Announces results to screen readers -->
+  <div id="srStatus" class="sr-only" role="status" aria-live="polite"></div>
+
+  <div class="app-container">
+
+    <!-- Left Panel -->
+    <header class="panel-start">
+      <div>
+        <div class="gradient-orb" style="margin: 0 auto;" aria-hidden="true"></div>
+        <h1>Pay with your voice. Stay in control.</h1>
+        <p>InclusivePay is a hands-free way to send money, pay bills and request payments. Every step is read back, confirmed out loud and protected by your PIN.</p>
+      </div>
+      <div style="width: 100%;">
+        <button id="startJourneyBtn" class="start-journey-btn">Start by voice</button>
+        <div style="font-size: 11px; color: var(--text-muted); margin-top: 12px;">Press the Spacebar anywhere to speak a command.</div>
+      </div>
+    </header>
+
+    <!-- Middle Panel -->
+    <main class="panel-center">
+      <div>
+        <div class="user-header">
+          <div class="user-info">
+            <div class="user-avatar" aria-hidden="true">👤</div>
+            <div class="user-details">
+              <div class="welcome-text">Welcome</div>
+              <div class="username">Guest User</div>
+            </div>
+          </div>
+          <button id="ttsToggle" class="help-icon" aria-pressed="true" aria-label="Spoken replies on" title="Toggle spoken replies (turn off if you use a screen reader)">🔊</button>
+        </div>
+
+        <h2 class="hub-title">Payments &amp; Balance Hub</h2>
+        <div class="hub-subtitle">Send money, pay bills and review your history.</div>
+
+        <div class="action-cards-grid">
+          <div id="sendMoneyCard" class="action-card" role="button" tabindex="0">
+            <div class="action-card-icon" aria-hidden="true">🎙️</div>
+            <div class="action-card-title">Send Money</div>
+            <div class="action-card-desc">Pay a contact</div>
+          </div>
+          <div id="requestCard" class="action-card" role="button" tabindex="0">
+            <div class="action-card-icon" style="color: #7ee787; background: rgba(126,231,135,0.15);" aria-hidden="true">✉</div>
+            <div class="action-card-title">Request Money</div>
+            <div class="action-card-desc">Send an invoice</div>
+          </div>
+          <div id="balanceCard" class="action-card" role="button" tabindex="0">
+            <div class="action-card-icon" style="color: var(--accent-cyan); background: rgba(0,188,212,0.15);" aria-hidden="true">$</div>
+            <div class="action-card-title">Check Balance</div>
+            <div class="action-card-desc">Account status</div>
+          </div>
+        </div>
+
+        <section class="utility-section" aria-labelledby="billPayTitle">
+          <div id="billPayTitle" class="utility-title">Quick Bill Pay</div>
+          <div class="utility-grid">
+            <button class="utility-btn" data-utility="electricity">⚡ Electricity Bill</button>
+            <button class="utility-btn" data-utility="internet">🌐 Internet Bill</button>
+            <button class="utility-btn" data-utility="water">💧 Water Bill</button>
+            <button class="utility-btn" data-utility="gas">🔥 Gas Bill</button>
+            <button class="utility-btn" data-utility="phone">📱 Phone Bill</button>
+          </div>
+        </section>
+
+        <div class="section-header">
+          <h3 class="section-title">Recent Activity</h3>
+          <a class="dash-link" href="dashboard.html">Open full dashboard →</a>
+        </div>
+
+        <div class="file-list" aria-live="polite"></div>
+      </div>
+    </main>
+
+    <!-- Right Panel -->
+    <aside class="panel-assistant">
+      <div class="assistant-top-header">InclusivePay Financial Assistant</div>
+
+      <div class="voice-assistant-card">
+        <div class="voice-orb" aria-hidden="true"></div>
+        <div class="voice-card-title">Smart Voice Assistant</div>
+        <div class="voice-card-desc">Speak your request. You will hear it read back and be asked to confirm before any money moves.</div>
+
+        <div class="voice-interaction-row">
+          <button id="voiceBtnModern" class="tap-to-speak-btn">🎙️ Tap to Speak</button>
+          <div id="outputModern" class="voice-instructions" aria-live="polite">
+            Try:<br>
+            <strong>"Check balance"</strong>, <strong>"Send 5 dollars to John"</strong>,<br>
+            <strong>"Request 20 dollars from Steve"</strong> or <strong>"Pay electricity bill"</strong>. Add <strong>"PIN 1 2 3 4"</strong> or you'll be asked for it.
+          </div>
+        </div>
+        <form id="askForm" class="ask-form" style="display: none;" autocomplete="off">
+          <label for="askInput" class="sr-only">Type a request to the assistant</label>
+          <input id="askInput" type="text" maxlength="300" placeholder="Or type: pay my electricity bill and send John $20">
+          <button type="submit" class="ask-btn">Ask</button>
+        </form>
+      </div>
+
+      <div class="grid-panel">
+        <div class="grid-header-row">
+          <h3 class="grid-title">Transaction History</h3>
+          <button id="exportPdfBtn" class="export-btn">📄 Export Statement</button>
+        </div>
+        <div id="grid" class="ag-theme-alpine-dark" role="region" aria-label="Transaction history table"></div>
+      </div>
+    </aside>
+
+    <!-- Modal dialog -->
+    <div id="customModal" class="modal-overlay" style="display: none;">
+      <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-describedby="modalBody">
+        <div id="modalTitle" class="modal-title">InclusivePay</div>
+        <div id="modalBody" class="modal-body"></div>
+        <div id="modalButtons" class="modal-buttons">
+          <button id="modalOkBtn" class="modal-btn primary">OK</button>
+          <button id="modalCancelBtn" class="modal-btn secondary" style="display: none;">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
