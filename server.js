@@ -120,6 +120,9 @@ const PENDING_BILLS = { electricity: 85.4, internet: 65.0, water: 42.1, gas: 38.
 const CONTACTS = {
   steve: 'sb-sridhar272281@personal.example.com',
   john: 'sb-u5yxn53195702@personal.example.com',
+  water: 'sb-j6ypn53470631_api1.business.example.com',
+  electricity: 'sb-j6ypn53470631_api1.business.example.com',
+  gas: 'sb-j6ypn53470631_api1.business.example.com'
 };
 const titleCase = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 
