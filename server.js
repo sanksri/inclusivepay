@@ -123,10 +123,10 @@ const CONTACTS = {
 };
 
 const BILLER_EMAILS = {
-   water: 'sb-xxxxx@business.example.com',
-   electricity: 'sb-xxxxx@business.example.com',
-   gas: 'sb-xxxxx@business.example.com',
-   internet: 'sb-xxxxx@business.example.com',
+   water: 'sb-j6ypn53470631@business.example.com',
+   electricity: 'sb-j6ypn53470631@business.example.com',
+   gas: 'sb-j6ypn53470631@business.example.com',
+   //internet: 'sb-xxxxx@business.example.com',
 };
 const titleCase = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 
