@@ -294,6 +294,10 @@ async function refreshInvoices() {
 // Webhook events (real ones from PayPal, or simulated ones in demo mode)
 // ---------------------------------------------------------------------------
 const PAYOUT_ITEM_STATUS = { SUCCEEDED: 'SUCCESS', CANCELED: 'CANCELED', HELD: 'ONHOLD' };
+// A payout can be "SUCCESS" as a batch while its one item is not: UNCLAIMED means the recipient's email has no
+// PayPal account yet, so the money has not arrived. The item's state is the truth and must not be overwritten.
+const ITEM_PROBLEMS = ['UNCLAIMED', 'FAILED', 'RETURNED', 'BLOCKED', 'ONHOLD', 'REFUNDED', 'CANCELED'];
+const statusNote = (st) => (st === 'UNCLAIMED' ? ' The recipient has no PayPal account for that email yet, so the money has not arrived.' : '');
 
 function applyEvent(event, source) {
   const type = String(event.event_type || '');
@@ -306,10 +310,11 @@ function applyEvent(event, source) {
     const tail = type.split('.').pop().replace(/-/g, '_');
     const next = String(type.startsWith('PAYMENT.PAYOUTSBATCH.') ? tail : (r.transaction_status || PAYOUT_ITEM_STATUS[tail] || tail)).toUpperCase();
     if (SETTLED_PAYOUT.includes(tx.status) && ['PENDING', 'PROCESSING'].includes(next)) return { handled: false, reason: 'out-of-order event ignored' };
+    if (type.startsWith('PAYMENT.PAYOUTSBATCH.') && next === 'SUCCESS' && ITEM_PROBLEMS.includes(tx.status)) return { handled: false, reason: 'batch success does not override an item problem' };
     if (tx.status !== next) {
       tx.status = next;
       saveTransactions();
-      addFeed(`Payment of ${tx.amount} to ${tx.recipient} is now ${next}.`, source);
+      addFeed(`Payment of ${tx.amount} to ${tx.recipient} is now ${next}.${statusNote(next)}`, source);
     }
     return { handled: true };
   }
@@ -499,8 +504,9 @@ app.get('/transactions', async (req, res) => {
               headers: { Authorization: `Bearer ${token}` },
               timeout: 8000,
             });
-            const status = r.data?.batch_header?.batch_status;
-            if (status && status !== t.status) { t.status = status; addFeed(`Payment of ${t.amount} to ${t.recipient} is now ${status}.`, 'poll'); }
+            const itemStatus = String(r.data?.items?.[0]?.transaction_status || '').toUpperCase();
+            const status = ITEM_PROBLEMS.includes(itemStatus) ? itemStatus : r.data?.batch_header?.batch_status; // the item's problem wins over the batch
+            if (status && status !== t.status) { t.status = status; addFeed(`Payment of ${t.amount} to ${t.recipient} is now ${status}.${statusNote(status)}`, 'poll'); }
           } catch (_) { /* keep old status */ }
         })
       );
