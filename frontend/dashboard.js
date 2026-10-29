@@ -434,6 +434,43 @@ function wireToolbar(prefix, getApi, kind) {
   });
 }
 
+// PDF statement: built in the browser with jsPDF. Uses words, never colour or symbols alone.
+function downloadStatement() {
+  const jsPDF = window.jspdf && window.jspdf.jsPDF;
+  if (!jsPDF) { announce('The PDF tool did not load. Check your connection and try again.', { speak: true }); return; }
+  const doc = new jsPDF();
+  const when = new Date();
+  doc.setProperties({ title: 'InclusivePay statement', author: 'InclusivePay' });
+  doc.setFontSize(18);
+  doc.text('InclusivePay statement', 14, 18);
+  doc.setFontSize(10);
+  doc.text(`Created ${when.toLocaleString()}  |  PayPal sandbox (test money)`, 14, 25);
+  if (state.balance && state.balance.balance) doc.text(`Balance: ${state.balance.balance} (${state.balance.source === 'paypal' ? 'from PayPal sandbox' : 'demo estimate'})`, 14, 31);
+
+  const rows = (list) => list.map((r) => [r.recipient, money(amountValue(r.amount)), statusInfo(r.status).label, niceDate(r)]);
+  const sum = (list) => list.reduce((t, r) => t + amountValue(r.amount), 0);
+  let y = 38;
+  const section = (title, head, list) => {
+    doc.setFontSize(13);
+    doc.text(title, 14, y);
+    doc.autoTable({
+      startY: y + 3,
+      head: [head],
+      body: list.length ? rows(list) : [['Nothing yet', '', '', '']],
+      foot: list.length ? [['Total', money(sum(list)), '', '']] : undefined,
+      styles: { fontSize: 10 },
+      headStyles: { fillColor: [0, 103, 122] },
+      footStyles: { fillColor: [232, 238, 245], textColor: 20 },
+      columnStyles: { 1: { halign: 'right' } },
+    });
+    y = doc.lastAutoTable.finalY + 12;
+  };
+  section('Money out: payments', ['To', 'Amount', 'Status', 'Date'], state.payments);
+  section('Money in: invoices', ['From', 'Amount', 'Status', 'Date'], state.invoices);
+  doc.save(`inclusivepay-statement-${when.toISOString().slice(0, 10)}.pdf`);
+  announce('Statement downloaded as a PDF.', { speak: true });
+}
+
 async function simulate(type) {
   try {
     const r = await fetch('/dev/simulate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type }) });
@@ -445,6 +482,7 @@ async function simulate(type) {
 document.addEventListener('DOMContentLoaded', async () => {
   initPrefs();
   buildGrids();
+  $('pdfBtn').addEventListener('click', downloadStatement);
   wireToolbar('pay', () => payApi, 'payment');
   wireToolbar('inv', () => invApi, 'invoice');
   $('simPayout').addEventListener('click', () => simulate('payout_success'));
