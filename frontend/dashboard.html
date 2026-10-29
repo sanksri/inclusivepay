@@ -11,6 +11,9 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@31.3.4/styles/ag-grid.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@31.3.4/styles/ag-theme-alpine.css">
   <script src="https://cdn.jsdelivr.net/npm/ag-grid-community@31.3.4/dist/ag-grid-community.min.js"></script>
+  <!-- PDF statements are built in the browser (no server work, nothing leaves the page) -->
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body data-theme="midnight" data-size="normal">
   <a class="skip-link" href="#main">Skip to the dashboard</a>
@@ -41,6 +44,7 @@
   </header>
 
   <main id="main">
+    <p class="toolbar"><button type="button" id="pdfBtn" class="btn">⬇ Download statement (PDF)</button></p>
     <p class="mode-line"><span id="liveBadge" class="live" role="status">Connecting…</span> <span id="modeLine"></span></p>
 
     <section aria-labelledby="kpiTitle">
