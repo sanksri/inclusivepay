@@ -46,7 +46,7 @@ Code: `agent.js` (tools, prompt, agent loop) and the `/agent` and `/agent/confir
 
 Open **http://localhost:3001/dashboard.html** (or the "Open full dashboard" link on the main page).
 
-- Two AG Grid tables: **payments you sent** and **invoices you requested**, with live totals, search, sorting, paging and CSV export.
+- Two AG Grid tables: **payments you sent** and **invoices you requested**, with live totals, search, sorting, paging and CSV export, plus a one-click **PDF statement** built in the browser.
 - Custom AG Grid widgets: a status **chip** (icon plus words, never colour alone), a signed **amount** renderer (−$2.00 out, +$20.00 in), a **Read aloud / Open on PayPal** action cell, and a **status filter** component with labelled checkboxes. Press **R** on a focused row to hear it.
 - Three themes (Midnight, Daylight, High contrast) and three text sizes, built by re-skinning AG Grid's alpine theme with CSS variables. Text colours are checked against WCAG AA contrast. Choices are remembered, and the default follows your OS light/dark and high-contrast settings.
 - KPI tiles, a spending-by-recipient chart, and a **live activity feed** that labels where each update came from (PayPal webhook, status check, app, or simulated).
